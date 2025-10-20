@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TubeTrailer | AI Email Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #2c5aa0;
+            --light-blue: #e8f0fe;
+            --accent-blue: #4a7bc8;
+            --dark-blue: #1e3a6e;
+            --white: #ffffff;
+            --light-grey: #f5f7fa;
+            --medium-grey: #e1e5eb;
+            --dark-grey: #6b7280;
+            --text-dark: #1f2937;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light-blue) 0%, var(--white) 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .logo-icon {
+            background: var(--primary-blue);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--dark-grey);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--medium-grey);
+        }
+
+        .card-icon {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-blue);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-grey);
+        }
+
+        textarea, select, input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--medium-grey);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: var(--white);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        textarea:focus, select:focus, input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(74, 123, 200, 0.2);
+        }
+
+        .optional-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--medium-grey);
+        }
+
+        .email-type-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .email-type-option {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--medium-grey);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+
+        .email-type-option:hover {
+            background: var(--light-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .email-type-option.selected {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .tone-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .tone-option {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--medium-grey);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--white);
+        }
+
+        .tone-option:hover {
+            background: var(--light-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .tone-option.selected {
+            background: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .btn {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: var(--dark-blue);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--light-grey);
+            color: var(--dark-grey);
+        }
+
+        .btn-secondary:hover {
+            background: var(--medium-grey);
+            color: var(--text-dark);
+        }
+
+        .generated-email {
+            background: var(--light-grey);
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            border: 1px solid var(--medium-grey);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary-blue);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--dark-grey);
+            font-size: 0.9rem;
+        }
+
+        .powered-by {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .promo-link-input {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <h1>TubeTrailer Email Assistant</h1>
+            </div>
+            <p class="subtitle">Create personalized emails for your TubeTrailer users with AI assistance. Select the email type, customize the content, and choose the perfect tone.</p>
+        </header>
+
+        <div class="app-container">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h2>Compose Your Email</h2>
+                </div>
+
+                <div class="form-group">
+                    <label for="emailType">Select Email Type</label>
+                    <div class="email-type-selector">
+                        <div class="email-type-option selected" data-type="new-user">
+                            <i class="fas fa-user-plus"></i> New User Welcome
+                        </div>
+                        <div class="email-type-option" data-type="returning-user">
+                            <i class="fas fa-redo"></i> Returning User
+                        </div>
+                        <div class="email-type-option" data-type="inactive-user">
+                            <i class="fas fa-user-clock"></i> Inactive User
+                        </div>
+                        <div class="email-type-option" data-type="promotional">
+                            <i class="fas fa-bullhorn"></i> Promotional
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="rawThoughts">Customize Your Message</label>
+                    <textarea id="rawThoughts" placeholder="Add any specific details or customizations for this email..."></textarea>
+                </div>
+
+                <div class="form-group" id="promoLinkGroup" style="display: none;">
+                    <label for="promoLink">Promotional Link (Optional)</label>
+                    <input type="text" id="promoLink" placeholder="https://example.com/promo">
+                </div>
+
+                <div class="form-group">
+                    <label for="tone">Select Tone</label>
+                    <div class="tone-selector">
+                        <div class="tone-option selected" data-tone="friendly">Friendly</div>
+                        <div class="tone-option" data-tone="professional">Professional</div>
+                        <div class="tone-option" data-tone="warm">Warm</div>
+                        <div class="tone-option" data-tone="persuasive">Persuasive</div>
+                        <div class="tone-option" data-tone="casual">Casual</div>
+                    </div>
+                </div>
+
+                <button id="generateBtn" class="btn">
+                    <i class="fas fa-magic"></i> Generate Email
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h2>Generated Email</h2>
+                </div>
+
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <p>AI is crafting your perfect email...</p>
+                </div>
+
+                <div class="generated-email" id="generatedEmail">
+                    Your AI-generated email will appear here. Select an email type, add any customizations, and click "Generate Email".
+                </div>
+
+                <div class="action-buttons">
+                    <button id="copyBtn" class="btn btn-secondary" disabled>
+                        <i class="far fa-copy"></i> Copy to Clipboard
+                    </button>
+                    <button id="newEmailBtn" class="btn btn-secondary">
+                        <i class="fas fa-plus"></i> New Email
+                    </button>
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i> Email copied to clipboard!
+                </div>
+
+                <div class="error-message" id="errorMessage">
+                    <i class="fas fa-exclamation-triangle"></i> <span id="errorText"></span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>TubeTrailer Email Assistant helps you communicate effectively with your users.</p>
+            <div class="powered-by">
+                <span>Powered by Google AI</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // API Configuration
+            const API_KEY = 'AIzaSyDrbyYrT4hZSlMfZ8SdLwDKbUE7HZZts-A';
+            const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+
+            // Elements
+            const emailTypeOptions = document.querySelectorAll('.email-type-option');
+            const rawThoughtsInput = document.getElementById('rawThoughts');
+            const promoLinkGroup = document.getElementById('promoLinkGroup');
+            const promoLinkInput = document.getElementById('promoLink');
+            const toneOptions = document.querySelectorAll('.tone-option');
+            const generateBtn = document.getElementById('generateBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const newEmailBtn = document.getElementById('newEmailBtn');
+            const generatedEmail = document.getElementById('generatedEmail');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            
+            let selectedEmailType = 'new-user';
+            let selectedTone = 'friendly';
+            
+            // Email type selection
+            emailTypeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    emailTypeOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedEmailType = this.getAttribute('data-type');
+                    
+                    // Show/hide promo link field
+                    if (selectedEmailType === 'promotional') {
+                        promoLinkGroup.style.display = 'block';
+                    } else {
+                        promoLinkGroup.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Tone selection
+            toneOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    toneOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedTone = this.getAttribute('data-tone');
+                });
+            });
+            
+            // Generate email
+            generateBtn.addEventListener('click', async function() {
+                const rawThoughts = rawThoughtsInput.value.trim();
+                const promoLink = promoLinkInput.value.trim();
+                
+                // Show loading state
+                loadingIndicator.style.display = 'block';
+                generatedEmail.textContent = '';
+                copyBtn.disabled = true;
+                hideError();
+                
+                try {
+                    const email = await generateEmailWithAPI(selectedEmailType, rawThoughts, selectedTone, promoLink);
+                    generatedEmail.textContent = email;
+                    copyBtn.disabled = false;
+                } catch (error) {
+                    console.error('API Error:', error);
+                    showError('Failed to generate email. Using fallback template.');
+                    // Fallback to simulated response
+                    const fallbackEmail = generateFallbackEmail(selectedEmailType, rawThoughts, selectedTone, promoLink);
+                    generatedEmail.textContent = fallbackEmail;
+                    copyBtn.disabled = false;
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                }
+            });
+            
+            // Copy to clipboard
+            copyBtn.addEventListener('click', function() {
+                const emailText = generatedEmail.textContent;
+                
+                navigator.clipboard.writeText(emailText).then(() => {
+                    successMessage.style.display = 'block';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 3000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showError('Failed to copy email to clipboard. Please try again.');
+                });
+            });
+            
+            // New email
+            newEmailBtn.addEventListener('click', function() {
+                rawThoughtsInput.value = '';
+                promoLinkInput.value = '';
+                generatedEmail.textContent = 'Your AI-generated email will appear here. Select an email type, add any customizations, and click "Generate Email".';
+                copyBtn.disabled = true;
+                hideError();
+                
+                // Reset to default selections
+                emailTypeOptions.forEach(opt => opt.classList.remove('selected'));
+                document.querySelector('.email-type-option[data-type="new-user"]').classList.add('selected');
+                selectedEmailType = 'new-user';
+                
+                toneOptions.forEach(opt => opt.classList.remove('selected'));
+                document.querySelector('.tone-option[data-tone="friendly"]').classList.add('selected');
+                selectedTone = 'friendly';
+                
+                promoLinkGroup.style.display = 'none';
+            });
+            
+            // API Integration
+            async function generateEmailWithAPI(emailType, customMessage, tone, promoLink) {
+                const prompt = createPrompt(emailType, customMessage, tone, promoLink);
+                
+                const requestBody = {
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }],
+                    generationConfig: {
+                        temperature: 0.7,
+                        topK: 40,
+                        topP: 0.95,
+                        maxOutputTokens: 1024,
+                    }
+                };
+                
+                const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+                    return data.candidates[0].content.parts[0].text;
+                } else {
+                    throw new Error('Invalid API response format');
+                }
+            }
+            
+            function createPrompt(emailType, customMessage, tone, promoLink) {
+                let prompt = `Create a ${tone} email for TubeTrailer based on the following requirements:
+
+Email Type: ${emailType}
+Tone: ${tone}
+
+`;
+                
+                // Add specific instructions based on email type
+                if (emailType === 'new-user') {
+                    prompt += `This is a welcome email for new users who just signed up for TubeTrailer. 
+TubeTrailer is an app that lets users watch the latest YouTube trailers and explore movies in one place.
+Key points to include:
+- Welcome them to TubeTrailer
+- Thank them for signing up
+- Mention upcoming features (chat with other users, download trailers and movies offline)
+- Encourage them to discover new movie trailers and watch full movies
+- Include standard footer with unsubscribe option
+
+`;
+                } else if (emailType === 'returning-user') {
+                    prompt += `This email is for users who have returned to TubeTrailer after some time.
+Key points to include:
+- Acknowledge their return
+- Express appreciation
+- Remind them about upcoming features (chat with other users, download trailers and movies offline)
+- Offer support if they have problems
+- Friendly closing
+
+`;
+                } else if (emailType === 'inactive-user') {
+                    prompt += `This email is for users who signed up a few days ago but haven't been active.
+Key points to include:
+- Welcome them (they signed up some days ago)
+- Express excitement about having them join
+- Hope they enjoyed using the app
+- Mention upcoming features (download trailers and movies offline)
+- Encourage them to discover new movie trailers
+- Hope to see them again
+
+`;
+                } else if (emailType === 'promotional') {
+                    prompt += `This is a promotional email for TubeTrailer users.
+Key points to include:
+- Thank them for signing up
+- Briefly describe TubeTrailer (watch YouTube trailers and explore movies)
+- Mention browsing trending trailers or searching for favorite movies
+- Note that new trailers are added daily
+- Include a promotional link
+- Standard unsubscribe option
+
+`;
+                    
+                    if (promoLink) {
+                        prompt += `Promotional Link: ${promoLink}\n\n`;
+                    }
+                }
+                
+                if (customMessage) {
+                    prompt += `Additional Customizations: ${customMessage}\n\n`;
+                }
+                
+                prompt += `Please generate a complete email with:
+- Appropriate subject line
+- Friendly greeting
+- Engaging body that addresses all the key points
+- Professional closing with TubeTrailer branding
+- Make sure the tone is ${tone} and matches the TubeTrailer brand voice
+
+Format the response as a clean, ready-to-use email.`;
+                
+                return prompt;
+            }
+            
+            // Fallback function if API fails
+            function generateFallbackEmail(emailType, customMessage, tone, promoLink) {
+                let email = "";
+                
+                // Common elements
+                const greeting = "Hello 👋\n\n";
+                const standardFooter = "\n\nYou can reply to this email and we'll respond.\nIf you don't want to receive this email, kindly reply \"Stop\"\n\nThanks again,\nTubeTrailer Team";
+                const promoFooter = "\n\nTo unsubscribe to this email, send back \"STOP\"\n\nTubeTrailer Team";
+                
+                // Subject lines based on type and tone
+                let subject = "Message from TubeTrailer";
+                if (emailType === 'new-user') {
+                    subject = "Welcome to TubeTrailer!";
+                } else if (emailType === 'returning-user') {
+                    subject = "Welcome Back to TubeTrailer!";
+                } else if (emailType === 'inactive-user') {
+                    subject = "We Miss You at TubeTrailer";
+                } else if (emailType === 'promotional') {
+                    subject = "Discover New Trailers on TubeTrailer";
+                }
+                
+                email += `Subject: ${subject}\n\n`;
+                email += greeting;
+                
+                // Email body based on type
+                if (emailType === 'new-user') {
+                    email += `We are pleased to welcome you to TubeTrailer! We hope you enjoy your time exploring movie trailers and thank you for signing up.\n\n`;
+                    email += `We're constantly working to improve your experience. Soon, we'll be adding exciting new features that will let you interact with other users and download trailers and movies to watch offline without internet.\n\n`;
+                    email += `But before then, use TubeTrailer to discover new movie trailers and then find where to watch the full movies.`;
+                    email += standardFooter;
+                    
+                } else if (emailType === 'returning-user') {
+                    email += `We're so pleased that you've decided to return to TubeTrailer. We salute you!\n\n`;
+                    email += `We're working on some amazing new features that we promised. Soon, you'll be able to connect and chat with other users, share comments, and download trailers and movies to watch offline.\n\n`;
+                    email += `If you have any problems or questions, you can reply to this email and we'll respond back.\n\n`;
+                    email += `Thank you for being part of the TubeTrailer community!`;
+                    email += "\n\nTubeTrailer Team";
+                    
+                } else if (emailType === 'inactive-user') {
+                    email += `We noticed you signed up for TubeTrailer a few days ago and wanted to officially welcome you!\n\n`;
+                    email += `We're excited to have you join us at TubeTrailer and hope you've had a great experience exploring movie trailers so far.\n\n`;
+                    email += `We're working on adding more features soon, including the ability to download all your favorite trailers and movies to keep for offline viewing.\n\n`;
+                    email += `In the meantime, use TubeTrailer to discover new movie trailers and find information about full movies.\n\n`;
+                    email += `We hope to see you back in the app soon!`;
+                    email += standardFooter;
+                    
+                } else if (emailType === 'promotional') {
+                    email += `Thanks for signing up for TubeTrailer! Our app lets you watch the latest YouTube trailers and explore movies all in one place.\n\n`;
+                    email += `Start by browsing today's trending trailers or search for your favorite movies. New trailers are added every day, so check back often for more content.\n\n`;
+                    
+                    if (promoLink) {
+                        email += `Visit our web app to check for updates:\n${promoLink}\n\n`;
+                    } else {
+                        email += `Visit our web app to check for updates:\nhttps://tinyurl.com/TubeTrailer-movies-web\n\n`;
+                    }
+                    
+                    email += promoFooter;
+                }
+                
+                // Add custom message if provided
+                if (customMessage) {
+                    email += `\n\n${customMessage}`;
+                }
+                
+                return email;
+            }
+            
+            function showError(message) {
+                errorText.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+            
+            function hideError() {
+                errorMessage.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
