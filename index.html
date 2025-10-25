@@ -602,79 +602,280 @@
                 }
             }
             
-            function createPrompt(emailType, customMessage, tone, promoLink) {
-                let prompt = `Create a ${tone} email for TubeTrailer based on the following requirements:
+           function createPrompt(emailType, customMessage, tone, promoLink) {
+    let emailExamples = '';
+    let promptInstructions = '';
 
+    // --- Start of Examples Section (3 Examples per category) ---
+    if (emailType === 'new-user') {
+        emailExamples = `
+--- EXAMPLE 1 (Warm Welcome & Action) ---
+Subject: Welcome to TubeTrailer! Your Movie Journey Starts Here 🎉
+
+Hello 
+We are pleased to welcome you to tubetrailer, we hope you enjoyed your time and thank you for sign-up.
+
+We hope to see you back soon. We will be adding some cool updates soon which would let you interact with other users and download trailers and movies offline to watch without internet. 
+But before then, use TubeTrailer to discover new movie trailers and then watch the full movies.
+Thanks again
+
+You can reply to this email and we'll respond. 
+If you don't want to receive this email (and future emails) anymore. Reply "Stop"
+
+TubeTrailer Team
+
+--- EXAMPLE 2 (Direct & Informative) ---
+
+Subject: Your Next Trailer is Waiting on TubeTrailer 
+
+Hi [User Name],
+
+We noticed that you created your account a few days ago, and we wanted to give you a friendly, excited nudge! 👋
+
+TubeTrailer is the fastest way to find trending YouTube movie trailers and, more importantly, instantly know where to stream the full movie. Don't waste time searching—we do the work for you!
+
+We're also busy working on a huge upgrade: offline downloads! Soon, you'll be able to save your favorite trailers and full-movie links to check out later, even without Wi-Fi.
+
+Ready to see what's trending right now? Log in and discover your next binge-watch!
+
+See you in the app, The TubeTrailer Team
+
+--- EXAMPLE 3 (Future-Focused & Grateful) ---
+Subject: You're In! Big Things are Coming to TubeTrailer, [User Name]!
+Hello,
+
+A massive thank you for creating your TubeTrailer account today. We truly appreciate your support!
+
+Right now, you can enjoy unlimited access to the newest YouTube trailers and instant streaming links. But that's just the beginning.
+
+Our upcoming offline download feature is going to revolutionize how you watch on the go. You can also expect a brand new, highly personalized recommendation engine within the next month.
+
+If you have any questions, don't hesitate to reply to this email.
+
+Enjoy the app!
+TubeTrailer Support
+--- END OF EXAMPLES ---
+
+`;
+        promptInstructions = `
+This is a welcome email for new users who just signed up for TubeTrailer.
+Key points to include:
+- Welcome them to TubeTrailer, the app for watching YouTube trailers and exploring movies.
+- Thank them for signing up.
+- Mention upcoming features (chat with other users, download trailers and movies offline).
+- Encourage them to discover new movie trailers and watch full movies.
+- Include a standard closing.
+`;
+
+    } else if (emailType === 'returning-user') {
+        emailExamples = `
+--- EXAMPLE 1 (The Check-In) ---
+Subject: Welcome Back to TubeTrailer![USERNAME]
+Hey [User Name],
+
+Great to see you back! We noticed you dropped by again, and we appreciate you checking back in with TubeTrailer.
+
+Since you were last here, we've added hundreds of new trailers and updated our movie library. We know you love movies, so we made sure the content is fresh!
+
+We're still focused on bringing you those offline downloads and user chat features we talked about. They're coming soon and will make your TubeTrailer experience even better.
+
+You can reply to this email if you have problems. We will respond back.
+Keep enjoying the trailers!
+The TubeTrailer Team
+
+
+
+--- EXAMPLE 2 (Focus on New Content) ---
+Subject: You Missed These! See the Newest Trailers on TubeTrailer
+Hello [User Name],
+
+
+We hope this email finds you well! It's been a little while since we've seen you active on TubeTrailer, and we wanted to reach out to let you know about some exciting updates we've made to the platform.
+
+We've been hard at work enhancing your TubeTrailer experience, and we're thrilled to share that we've significantly expanded our content library. You'll now find an ever-growing collection of YouTube movies and trailers being added daily, giving you access to unlimited movie content completely free of charge.
+
+Whether you're looking to discover the latest blockbuster trailers or dive into full-length films, TubeTrailer has something for every movie enthusiast. We believe these improvements will make your time on our platform even more enjoyable and engaging. And guess what. There are ZERO ADS, so you can explore content without annoyings popups.
+
+We'd love to have you back! 
+Thank you for being part of the TubeTrailer community. If you have any questions or feedback, we're always here to help.
+
+Warm regards,
+
+
+TubeTrailer Team
+
+
+
+--- EXAMPLE 3 (Feedback and Future) ---
+Subject: Quick Question for You, [User Name] (Plus Feature Updates!)
+Hi,
+
+We value your continued support for TubeTrailer. Your opinion helps us shape the future of the app!
+
+If you have a moment, we'd love to know what you'd like to see improved most—just reply to this email!
+
+We are moving full-steam ahead on offline downloads, which should be ready in the next two weeks. Prepare to cut the cord and save your data!
+
+Thanks for being a valued user!
+TubeTrailer Support
+--- END OF EXAMPLES ---
+
+`;
+        promptInstructions = `
+This email is for users who have returned to TubeTrailer after some time.
+Key points to include:
+- Acknowledge their return and express appreciation.
+- Remind them about upcoming features (chat with other users, download trailers and movies offline).
+- Offer support or ask for feedback.
+- Friendly closing.
+`;
+
+    } else if (emailType === 'inactive-user') {
+        emailExamples = `
+--- EXAMPLE 1 (The Gentle Nudge) ---
+Subject: Don't miss out on the latest trailers! - TubeTrailer
+Hi [User Name],
+
+We noticed you signed up a few days ago but haven't been back to watch a trailer yet! We're genuinely excited to have you join the community.
+
+TubeTrailer is the perfect place to quickly watch the best new YouTube trailers and find out exactly where to watch the full movie. Every day brings a new batch of cinematic excitement!
+
+You'll be able to download your favorite trailers and movies soon—we’re working hard on that feature now. Ofcourse you know, there are zero ads on the platform, no annoying popups to distract you from exploring your favourite content.
+
+Why not discover a new movie trailer today? We hope to see you back in the app soon!
+
+Best,
+The TubeTrailer Team
+
+--- EXAMPLE 2 (The FOMO Hook) ---
+Subject: Your Watchlist is Waiting! Last Chance to See Trending Trailers
+Hello,
+
+It seems like you haven't had a chance to dive into the world of TubeTrailer. We get it, life is busy!
+
+However, the new trailer for ['TRENDING TRAILER NAME'] is currently trending, and it's spectacular. You can watch the full trailer in less than two minutes.
+
+Don't miss out on knowing what everyone is talking about! Log in now, and we'll take you straight to the Trending page.
+
+See you there!
+The TubeTrailer Crew
+
+--- EXAMPLE 3 (The Specific Feature) ---
+Subject: Quick reminder about your TubeTrailer account!
+Dear [User Name],
+
+We just wanted to reach out and remind you that your TubeTrailer account is ready and waiting for you.
+
+Did you know TubeTrailer is the only place where you can quickly SEE THE AVALIABILTY OF ANY TRAILER you search for so you can watch the movie instantly?
+
+We're about to launch our big offline feature, so now is the perfect time to get familiar with the app before the update drops.
+
+We hope you'll take a look!
+
+Warmly,
+TubeTrailer Support
+--- END OF EXAMPLES ---
+
+`;
+        promptInstructions = `
+This email is for users who signed up a few days ago but haven't been active.
+Key points to include:
+- Welcome them and express excitement about their potential.
+- Mention upcoming features and recent feature like the new avaliabilty button that lets you check if a traailer is out for instant streaming
+- Highlight the unique value proposition of the app.
+- Encourage them to discover new movie trailers.
+- Hope to see them again.
+`;
+
+    } else if (emailType === 'promotional') {
+        emailExamples = `
+--- EXAMPLE 1 (General Offer) ---
+Subject: 🍿 Special Offer: Get [Promotion Detail] with TubeTrailer!
+Hello Movie Lover,
+
+We just wanted to share a great way to use TubeTrailer. Whether you’re browsing trending trailers or searching for a specific movie, we make it easy. We add new trailers every day!
+
+As a special thanks, we’ve included a link to [Briefly describe the promotion/link benefit].
+
+Click here to explore the latest trailers and claim your offer: [Promo Link Placeholder]
+
+Happy watching,
+The TubeTrailer Team
+
+--- EXAMPLE 2 (Specific Category Focus) ---
+Subject: Sci-Fi Fans Rejoice! Exclusive Offer from TubeTrailer
+Hi [User Name],
+
+Our data shows you love science fiction! We just updated our 'Sci-Fi Future' category with 20+ new trailers for upcoming blockbusters.
+
+To celebrate, we are giving you an exclusive promotion! This is a limited-time offer just for our dedicated fans.
+
+Click the link below to get started and redeem your special offer: [Promo Link Placeholder]
+
+Don't miss out!
+The TubeTrailer Crew
+
+--- EXAMPLE 3 (Limited Time Urgency) ---
+Subject: ⏰ 48-Hour Exclusive Gift Just for You, [User Name]!
+Hello,
+
+As a valued member of the TubeTrailer community, we wanted to give you a special, limited-time gift!
+
+This offer is only valid for the next 48 hours, so don't delay. It's our way of saying thank you for always keeping up with the latest trailers.
+
+To claim your exclusive benefit, click here right now: [Promo Link Placeholder]
+
+Don't let the clock run out!
+TubeTrailer Support
+--- END OF EXAMPLES ---
+`;
+        promptInstructions = `
+This is a promotional email for TubeTrailer users.
+Key points to include:
+- Thank them for their support.
+- Briefly describe TubeTrailer and the value it provides.
+- Include a clear call-to-action with the promotional link.
+- Use language that creates excitement and urgency if applicable.
+- Standard closing.
+`;
+    }
+    // --- End of Examples Section ---
+
+    let prompt = `You are the AI Email Assistant for the TubeTrailer app. Your job is to generate a user email that perfectly matches the established brand voice.
+
+**BRAND VOICE GUIDE:**
+1. **Tone:** Always maintain a professional, yet approachable and ${tone} tone.
+2. **Format:** The response must be a clean, ready-to-use email. Start with the Subject line, then a newline, then the body. Do not include markdown formatting like 'Subject: ' or code blocks.
+3. **Personalization:** Use "[User Name]" as a placeholder for the user's name.
+
+**EMAIL REQUIREMENTS:**
 Email Type: ${emailType}
 Tone: ${tone}
 
-`;
-                
-                // Add specific instructions based on email type
-                if (emailType === 'new-user') {
-                    prompt += `This is a welcome email for new users who just signed up for TubeTrailer. 
-TubeTrailer is an app that lets users watch the latest YouTube trailers and explore movies in one place.
-Key points to include:
-- Welcome them to TubeTrailer
-- Thank them for signing up
-- Mention upcoming features (chat with other users, download trailers and movies offline)
-- Encourage them to discover new movie trailers and watch full movies
-- Include standard footer with unsubscribe option
+**Customizations/Details to Include:** ${customMessage || 'None provided. Use standard template content.'}
 
 `;
-                } else if (emailType === 'returning-user') {
-                    prompt += `This email is for users who have returned to TubeTrailer after some time.
-Key points to include:
-- Acknowledge their return
-- Express appreciation
-- Remind them about upcoming features (chat with other users, download trailers and movies offline)
-- Offer support if they have problems
-- Friendly closing
 
+    // Add the specific email examples
+    prompt += emailExamples;
+
+    // Add specific instructions and promotional link
+    prompt += promptInstructions;
+
+    if (promoLink) {
+        prompt += `
+MANDATORY: The promotional link must be clearly displayed and linked in the email body: ${promoLink}
 `;
-                } else if (emailType === 'inactive-user') {
-                    prompt += `This email is for users who signed up a few days ago but haven't been active.
-Key points to include:
-- Welcome them (they signed up some days ago)
-- Express excitement about having them join
-- Hope they enjoyed using the app
-- Mention upcoming features (download trailers and movies offline)
-- Encourage them to discover new movie trailers
-- Hope to see them again
+    }
 
+    prompt += `
+Now, generate the complete email based on the requirements, learning the desired style, structure, and spacing from the three EXAMPLES provided in the section above.
 `;
-                } else if (emailType === 'promotional') {
-                    prompt += `This is a promotional email for TubeTrailer users.
-Key points to include:
-- Thank them for signing up
-- Briefly describe TubeTrailer (watch YouTube trailers and explore movies)
-- Mention browsing trending trailers or searching for favorite movies
-- Note that new trailers are added daily
-- Include a promotional link
-- Standard unsubscribe option
 
-`;
-                    
-                    if (promoLink) {
-                        prompt += `Promotional Link: ${promoLink}\n\n`;
-                    }
-                }
-                
-                if (customMessage) {
-                    prompt += `Additional Customizations: ${customMessage}\n\n`;
-                }
-                
-                prompt += `Please generate a complete email with:
-- Appropriate subject line
-- Friendly greeting
-- Engaging body that addresses all the key points
-- Professional closing with TubeTrailer branding
-- Make sure the tone is ${tone} and matches the TubeTrailer brand voice
+    return prompt;
+}
 
-Format the response as a clean, ready-to-use email.`;
-                
-                return prompt;
-            }
+
             
             // Fallback function if API fails
             function generateFallbackEmail(emailType, customMessage, tone, promoLink) {
