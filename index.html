@@ -341,6 +341,124 @@
         .promo-link-input {
             margin-top: 15px;
         }
+        
+        .save-section {
+    margin-top: 15px;
+}
+
+.save-section {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.saved-emails {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--medium-grey);
+}
+
+.saved-emails h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: var(--dark-blue);
+    text-align: center;
+}
+
+.saved-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--medium-grey);
+    border-radius: 8px;
+    background: var(--white);
+}
+
+.saved-email-item {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--medium-grey);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.saved-email-item:last-child {
+    border-bottom: none;
+}
+
+.saved-email-item:hover {
+    background: var(--light-blue);
+}
+
+.saved-email-subject {
+    font-weight: 600;
+    color: var(--dark-blue);
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+}
+
+.saved-email-preview {
+    font-size: 0.85rem;
+    color: var(--dark-grey);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+}
+
+.saved-email-time {
+    font-size: 0.75rem;
+    color: var(--dark-grey);
+    text-align: right;
+}
+
+.empty-saved {
+    text-align: center;
+    color: var(--dark-grey);
+    font-style: italic;
+    padding: 30px 20px;
+    background: var(--light-grey);
+    border-radius: 8px;
+}
+
+/* Scrollbar styling for saved list */
+.saved-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.saved-list::-webkit-scrollbar-track {
+    background: var(--light-grey);
+    border-radius: 0 8px 8px 0;
+}
+
+.saved-list::-webkit-scrollbar-thumb {
+    background: var(--medium-grey);
+    border-radius: 3px;
+}
+
+.saved-list::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-grey);
+}
+
+/* Ensure the card layout remains balanced */
+.card {
+    display: flex;
+    flex-direction: column;
+}
+
+.generated-email {
+    flex: 1;
+    min-height: 200px;
+}
+
+.action-buttons {
+    flex-shrink: 0;
+}
+
+.save-section {
+    flex-shrink: 0;
+}
+
+.saved-emails {
+    flex-shrink: 0;
+}
     </style>
 </head>
 <body>
@@ -434,6 +552,20 @@
                     </button>
                 </div>
 
+<div class="save-section">
+    <button id="saveBtn" class="btn btn-secondary" disabled>
+        <i class="fas fa-save"></i> Save Email
+    </button>
+</div>
+
+<!-- ADD SAVED EMAILS DISPLAY -->
+<div class="saved-emails" id="savedEmails">
+    <h3>Saved Emails</h3>
+    <div class="saved-list" id="savedList">
+        <!-- Saved emails will appear here -->
+    </div>
+</div>
+
                 <div class="success-message" id="successMessage">
                     <i class="fas fa-check-circle"></i> Email copied to clipboard!
                 </div>
@@ -453,7 +585,17 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+       
+       // Movie API Configuration
+const YOUTUBE_API_KEY = 'AIzaSyAJilyAX3m48xyz64S1U8res3cOhGFH82BY';
+const GOOGLE_API_KEY = 'AIzaSyDaylbyFa7zYkij2OxE5Uqyi_nyC_q-9w0';
+const SEARCH_ENGINE_ID = '24d6e24f032de483d';
+
+// Add these to your existing element declarations
+const saveBtn = document.getElementById('saveBtn');
+const savedEmails = document.getElementById('savedEmails');
+const savedList = document.getElementById('savedList');
+ document.addEventListener('DOMContentLoaded', function() {
             // API Configuration
             const API_KEY = 'AIzaSyDrbyYrT4hZSlMfZ8SdLwDKbUE7HZZts-A';
             const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
@@ -502,31 +644,36 @@
             });
             
             // Generate email
-            generateBtn.addEventListener('click', async function() {
-                const rawThoughts = rawThoughtsInput.value.trim();
-                const promoLink = promoLinkInput.value.trim();
-                
-                // Show loading state
-                loadingIndicator.style.display = 'block';
-                generatedEmail.textContent = '';
-                copyBtn.disabled = true;
-                hideError();
-                
-                try {
-                    const email = await generateEmailWithAPI(selectedEmailType, rawThoughts, selectedTone, promoLink);
-                    generatedEmail.textContent = email;
-                    copyBtn.disabled = false;
-                } catch (error) {
-                    console.error('API Error:', error);
-                    showError('Failed to generate email. Using fallback template.');
-                    // Fallback to simulated response
-                    const fallbackEmail = generateFallbackEmail(selectedEmailType, rawThoughts, selectedTone, promoLink);
-                    generatedEmail.textContent = fallbackEmail;
-                    copyBtn.disabled = false;
-                } finally {
-                    loadingIndicator.style.display = 'none';
-                }
-            });
+            // Generate email
+generateBtn.addEventListener('click', async function() {
+    const rawThoughts = rawThoughtsInput.value.trim();
+    const promoLink = promoLinkInput.value.trim();
+    
+    // Show loading state
+    loadingIndicator.style.display = 'block';
+    generatedEmail.textContent = '';
+    copyBtn.disabled = true;
+    hideError();
+    
+    try {
+        const email = await generateEmailWithAPI(selectedEmailType, rawThoughts, selectedTone, promoLink);
+        generatedEmail.textContent = email;
+        copyBtn.disabled = false;
+    } catch (error) {
+        console.error('API Error:', error);
+        if (selectedEmailType === 'promotional') {
+            showError('Failed to fetch movie trailer data. Please try again.');
+        } else {
+            showError('Failed to generate email. Using fallback template.');
+            // Fallback to simulated response
+            const fallbackEmail = generateFallbackEmail(selectedEmailType, rawThoughts, selectedTone, promoLink);
+            generatedEmail.textContent = fallbackEmail;
+            copyBtn.disabled = false;
+        }
+    } finally {
+        loadingIndicator.style.display = 'none';
+    }
+});
             
             // Copy to clipboard
             copyBtn.addEventListener('click', function() {
@@ -565,44 +712,126 @@
             
             // API Integration
             async function generateEmailWithAPI(emailType, customMessage, tone, promoLink) {
-                const prompt = createPrompt(emailType, customMessage, tone, promoLink);
-                
-                const requestBody = {
-                    contents: [{
-                        parts: [{
-                            text: prompt
-                        }]
-                    }],
-                    generationConfig: {
-                        temperature: 0.7,
-                        topK: 40,
-                        topP: 0.95,
-                        maxOutputTokens: 1024,
-                    }
-                };
-                
-                const response = await fetch(`${API_URL}?key=${API_KEY}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`API request failed with status ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-                    return data.candidates[0].content.parts[0].text;
-                } else {
-                    throw new Error('Invalid API response format');
-                }
-            }
+    let movieData = [];
+    
+    // Only fetch movie data for promotional emails
+    if (emailType === 'promotional') {
+        try {
+            movieData = await fetchTrendingMovieTrailers();
+        } catch (error) {
+            throw new Error('Failed to fetch movie trailer data');
+        }
+    }
+    
+    const prompt = createPrompt(emailType, customMessage, tone, promoLink, movieData);
+    
+    // Rest of your existing API call code remains the same...
+    const requestBody = {
+        contents: [{
+            parts: [{
+                text: prompt
+            }]
+        }],
+        generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+        }
+    };
+    
+    const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+    });
+    
+    if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+        return data.candidates[0].content.parts[0].text;
+    } else {
+        throw new Error('Invalid API response format');
+    }
+}
             
-           function createPrompt(emailType, customMessage, tone, promoLink) {
+            
+            async function fetchTrendingMovieTrailers() {
+    try {
+        // YouTube API call for movie trailers
+        const searchQueries = ["latest trailer animation", "latest movie trailer"];
+        let allMovies = [];
+        
+        for (const query of searchQueries) {
+            const response = await fetch(
+                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&videoCategoryId=1&maxResults=2&key=${YOUTUBE_API_KEY}`
+            );
+            const data = await response.json();
+            
+            if (data.items) {
+                // Process and clean movie titles
+                const movies = await Promise.all(
+                    data.items.map(async (item) => {
+                        const title = cleanMovieTitle(item.snippet.title);
+                        const description = await fetchMovieBlurb(title);
+                        return {
+                            title: title,
+                            youtubeDescription: item.snippet.description,
+                            blurb: description
+                        };
+                    })
+                );
+                allMovies = [...allMovies, ...movies];
+            }
+        }
+        
+        // Remove duplicates and return 4 unique movies
+        return [...new Map(allMovies.map(item => [item.title, item])).values()].slice(0, 4);
+        
+    } catch (error) {
+        throw new Error('Failed to fetch movie data');
+    }
+}
+
+function cleanMovieTitle(title) {
+    // Remove common trailer phrases
+    return title
+        .replace(/official trailer/gi, '')
+        .replace(/new movie trailers/gi, '')
+        .replace(/most anticipated/gi, '')
+        .replace(/\|/g, '')
+        .replace(/-/g, '')
+        .replace(/trailer/gi, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/\(.*?\)/g, '')
+        .trim();
+}
+
+async function fetchMovieBlurb(movieTitle) {
+    try {
+        // Google Search API for movie details
+        const response = await fetch(
+            `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(movieTitle + " movie plot description")}&key=${GOOGLE_API_KEY}&cx=${SEARCH_ENGINE_ID}`
+        );
+        const data = await response.json();
+        
+        if (data.items && data.items[0]) {
+            return data.items[0].snippet;
+        }
+        return "Exciting new movie trailer just released!";
+    } catch (error) {
+        return "Exciting new movie trailer just released!";
+    }
+}
+
+           function createPrompt(emailType, customMessage, tone, promoLink, movieData = []) {
+           
     let emailExamples = '';
     let promptInstructions = '';
 
@@ -788,55 +1017,87 @@ Key points to include:
 `;
 
     } else if (emailType === 'promotional') {
+        // UPDATE THE EXAMPLES TO BE MOVIE-FOCUSED
         emailExamples = `
---- EXAMPLE 1 (General Offer) ---
-Subject: 🍿 Special Offer: Get [Promotion Detail] with TubeTrailer!
-Hello Movie Lover,
+--- EXAMPLE 1 (Movie Announcement) ---
+Subject: 🍿 [Movie Title] Trailer is Out Now!
 
-We just wanted to share a great way to use TubeTrailer. Whether you’re browsing trending trailers or searching for a specific movie, we make it easy. We add new trailers every day!
+Hello [User Name],
 
-As a special thanks, we’ve included a link to [Briefly describe the promotion/link benefit].
+I hope you're doing great, watching great films. We wanted you to be the first to hear this.
 
-Click here to explore the latest trailers and claim your offer: [Promo Link Placeholder]
+[Movie Title] trailer is now finally out!
+[Movie blurb and description about the plot and excitement]
+
+Also, these other movies are out too:
+• [Other Movie 1]: [Brief description]
+• [Other Movie 2]: [Brief description]
+
+Guess what? You can watch instantly on TubeTrailer and check if their full releases are out.
+
+Happy viewing!
+
+--- EXAMPLE 2 (Multiple Movies) ---
+Subject: 🎬 4 New Trailers You Can't Miss This Week!
+
+Hi [User Name],
+
+This week is packed with incredible new movie trailers! We've curated the best ones for you:
+
+1. [Movie Title 1]
+   [Engaging description and why it's exciting]
+
+2. [Movie Title 2]  
+   [Compelling blurb about the movie]
+
+3. [Movie Title 3]
+   [Interesting plot details]
+
+4. [Movie Title 4]
+   [Why this trailer is trending]
+
+All these trailers are available right now on TubeTrailer. Open the app to watch them instantly!
+
+--- EXAMPLE 3 (Personalized Movie Update) ---
+Subject: Your Next Favorite Movie Just Dropped Its Trailer!
+
+Hey [User Name],
+
+We know you love great cinema, so we're excited to share that [Movie Title] just released its trailer!
+
+Here's what makes it special:
+[Detailed movie description and highlights]
+
+Plus, don't miss these other trending trailers:
+• [Movie 2] - [Quick hook]
+• [Movie 3] - [Quick hook]
+
+As a special thanks, we've included early access to these trailers on TubeTrailer.
+
+Click here to watch them now: [Promo Link Placeholder]
 
 Happy watching,
 The TubeTrailer Team
-
---- EXAMPLE 2 (Specific Category Focus) ---
-Subject: Sci-Fi Fans Rejoice! Exclusive Offer from TubeTrailer
-Hi [User Name],
-
-Our data shows you love science fiction! We just updated our 'Sci-Fi Future' category with 20+ new trailers for upcoming blockbusters.
-
-To celebrate, we are giving you an exclusive promotion! This is a limited-time offer just for our dedicated fans.
-
-Click the link below to get started and redeem your special offer: [Promo Link Placeholder]
-
-Don't miss out!
-The TubeTrailer Crew
-
---- EXAMPLE 3 (Limited Time Urgency) ---
-Subject: ⏰ 48-Hour Exclusive Gift Just for You, [User Name]!
-Hello,
-
-As a valued member of the TubeTrailer community, we wanted to give you a special, limited-time gift!
-
-This offer is only valid for the next 48 hours, so don't delay. It's our way of saying thank you for always keeping up with the latest trailers.
-
-To claim your exclusive benefit, click here right now: [Promo Link Placeholder]
-
-Don't let the clock run out!
-TubeTrailer Support
 --- END OF EXAMPLES ---
 `;
+
         promptInstructions = `
-This is a promotional email for TubeTrailer users.
+This is a MOVIE PROMOTIONAL email for TubeTrailer users featuring real trending movie trailers.
+
+MOVIE DATA TO USE:
+${movieData.map(movie => `
+- Title: ${movie.title}
+- Description: ${movie.blurb}
+`).join('\n')}
+
 Key points to include:
-- Thank them for their support.
-- Briefly describe TubeTrailer and the value it provides.
-- Include a clear call-to-action with the promotional link.
-- Use language that creates excitement and urgency if applicable.
-- Standard closing.
+- Use the actual movie titles and descriptions provided above
+- Create engaging, natural-sounding movie announcements
+- Feature the movies in a way that excites users about new content
+- Include a clear call-to-action to open the TubeTrailer app
+- Use language that creates excitement about the new trailers
+- ${promoLink ? `Include this promotional link: ${promoLink}` : 'Include a general call-to-action to open the app'}
+- Standard closing
 `;
     }
     // --- End of Examples Section ---
@@ -953,6 +1214,104 @@ Now, generate the complete email based on the requirements, learning the desired
                 errorMessage.style.display = 'none';
             }
         });
+        
+        
+        // Local Storage Functions
+function saveEmailToStorage(emailContent) {
+    const savedEmails = JSON.parse(localStorage.getItem('tubeTrailerEmails') || '[]');
+    
+    // Extract subject from email content
+    const subjectMatch = emailContent.match(/^Subject:\s*(.+)$/m);
+    const subject = subjectMatch ? subjectMatch[1] : 'Saved Email';
+    
+    const emailData = {
+        id: Date.now().toString(),
+        subject: subject,
+        content: emailContent,
+        timestamp: new Date().toLocaleString(),
+        preview: emailContent.substring(0, 100) + '...'
+    };
+    
+    savedEmails.unshift(emailData); // Add to beginning
+    localStorage.setItem('tubeTrailerEmails', JSON.stringify(savedEmails));
+    
+    return emailData;
+}
+
+function loadSavedEmails() {
+    const savedEmails = JSON.parse(localStorage.getItem('tubeTrailerEmails') || '[]');
+    displaySavedEmails(savedEmails);
+    return savedEmails;
+}
+
+function displaySavedEmails(emails) {
+    if (emails.length === 0) {
+        savedList.innerHTML = '<div class="empty-saved">No saved emails yet</div>';
+        savedEmails.style.display = 'none';
+        return;
+    }
+    
+    savedEmails.style.display = 'block';
+    savedList.innerHTML = emails.map(email => `
+        <div class="saved-email-item" data-id="${email.id}">
+            <div class="saved-email-subject">${email.subject}</div>
+            <div class="saved-email-preview">${email.preview}</div>
+            <div class="saved-email-time">${email.timestamp}</div>
+        </div>
+    `).join('');
+}
+
+function loadEmailIntoEditor(emailId) {
+    const savedEmails = JSON.parse(localStorage.getItem('tubeTrailerEmails') || '[]');
+    const email = savedEmails.find(e => e.id === emailId);
+    
+    if (email) {
+        generatedEmail.textContent = email.content;
+        copyBtn.disabled = false;
+        saveBtn.disabled = false;
+        // Scroll to the generated email section
+        generatedEmail.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+
+// Save button event listener
+saveBtn.addEventListener('click', function() {
+    const emailContent = generatedEmail.textContent;
+    
+    if (emailContent && !emailContent.includes('Your AI-generated email will appear here')) {
+        const savedEmail = saveEmailToStorage(emailContent);
+        loadSavedEmails(); // Refresh the list
+        
+        // Show success message
+        showSuccess('Email saved successfully!');
+    }
+});
+
+// Load saved email when clicked
+savedList.addEventListener('click', function(e) {
+    const emailItem = e.target.closest('.saved-email-item');
+    if (emailItem) {
+        const emailId = emailItem.getAttribute('data-id');
+        loadEmailIntoEditor(emailId);
+    }
+});
+
+// Enable save button when email is generated
+// Add this inside your generateBtn click handler, after email is generated:
+// In your generateBtn click handler, after this line:
+// generatedEmail.textContent = email;
+// Add this:
+saveBtn.disabled = false;
+
+// Similarly, in your fallback email section, add:
+// saveBtn.disabled = false;
+
+// Load saved emails when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadSavedEmails();
+    // ... your existing DOMContentLoaded code
+});
     </script>
 </body>
 </html>
