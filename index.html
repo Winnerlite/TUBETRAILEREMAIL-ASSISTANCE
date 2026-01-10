@@ -578,11 +578,9 @@
 
         <footer>
             <p>TubeTrailer Email Assistant helps you communicate effectively with your users.</p>
-            <div class="powered-by">
-                <span>Powered by Google AI</span>
-            </div>
-        </footer>
-    </div>
+           <div class="powered-by">
+    <span>Powered by Groq</span>
+</div>
 
     <script>
        
@@ -597,8 +595,10 @@ const savedEmails = document.getElementById('savedEmails');
 const savedList = document.getElementById('savedList');
  document.addEventListener('DOMContentLoaded', function() {
             // API Configuration
-            const API_KEY = 'AIzaSyDrbyYrT4hZSlMfZ8SdLwDKbUE7HZZts-A';
-            const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+            // Groq API Configuration
+const GROQ_API_KEY = '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';
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const GROQ_MODEL = 'llama-3.1-8b-instant';
 
             // Elements
             const emailTypeOptions = document.querySelectorAll('.email-type-option');
@@ -714,7 +714,6 @@ generateBtn.addEventListener('click', async function() {
             async function generateEmailWithAPI(emailType, customMessage, tone, promoLink) {
     let movieData = [];
     
-    // Only fetch movie data for promotional emails
     if (emailType === 'promotional') {
         try {
             movieData = await fetchTrendingMovieTrailers();
@@ -725,39 +724,45 @@ generateBtn.addEventListener('click', async function() {
     
     const prompt = createPrompt(emailType, customMessage, tone, promoLink, movieData);
     
-    // Rest of your existing API call code remains the same...
+    // Groq API request
     const requestBody = {
-        contents: [{
-            parts: [{
-                text: prompt
-            }]
-        }],
-        generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 4096,
-        }
+        model: GROQ_MODEL,
+        messages: [
+            {
+                role: "system",
+                content: "You are an AI email assistant for TubeTrailer app. Generate professional, ready-to-use emails based on the user's requirements."
+            },
+            {
+                role: "user",
+                content: prompt
+            }
+        ],
+        temperature: 1,
+        max_tokens: 1024,
+        top_p: 1,
+        stream: false
     };
     
-    const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+    const response = await fetch(GROQ_API_URL, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${GROQ_API_KEY}`
         },
         body: JSON.stringify(requestBody)
     });
     
     if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`Groq API request failed with status ${response.status}: ${errorText}`);
     }
     
     const data = await response.json();
     
-    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
-        return data.candidates[0].content.parts[0].text;
+    if (data.choices && data.choices[0] && data.choices[0].message) {
+        return data.choices[0].message.content;
     } else {
-        throw new Error('Invalid API response format');
+        throw new Error('Invalid Groq API response format');
     }
 }
             
@@ -844,8 +849,8 @@ Subject: Welcome to TubeTrailer! Your Movie Journey Starts Here 🎉
 Hello 
 We are pleased to welcome you to tubetrailer, we hope you enjoyed your time and thank you for sign-up.
 
-We hope to see you back soon. We will be adding some cool updates soon which would let you interact with other users and download trailers and movies offline to watch without internet. 
-But before then, use TubeTrailer to discover new movie trailers and then watch the full movies.
+We hope to see you back soon. We will have added some cool updates soon which would let you interact with other users and download trailers and movies offline to watch without internet. 
+Use TubeTrailer to discover new movie trailers and then watch the full movies.
 Thanks again
 
 You can reply to this email and we'll respond. 
@@ -863,7 +868,7 @@ We noticed that you created your account a few days ago, and we wanted to give y
 
 TubeTrailer is the fastest way to find trending YouTube movie trailers and, more importantly, instantly know where to stream the full movie. Don't waste time searching—we do the work for you!
 
-We're also busy working on a huge upgrade: offline downloads! Soon, you'll be able to save your favorite trailers and full-movie links to check out later, even without Wi-Fi.
+We're busy working on a huge upgrade: offline downloads! Now you can be able to save your favorite trailers and full-movie links to check out later, even without Wi-Fi.
 
 Ready to see what's trending right now? Log in and discover your next binge-watch!
 
@@ -877,7 +882,7 @@ A massive thank you for creating your TubeTrailer account today. We truly apprec
 
 Right now, you can enjoy unlimited access to the newest YouTube trailers and instant streaming links. But that's just the beginning.
 
-Our upcoming offline download feature is going to revolutionize how you watch on the go. You can also expect a brand new, highly personalized recommendation engine within the next month.
+Our offline download feature is going to revolutionize how you watch on the go. You can also expect a brand new, highly personalized recommendation engine within the next month.
 
 If you have any questions, don't hesitate to reply to this email.
 
@@ -906,7 +911,7 @@ Great to see you back! We noticed you dropped by again, and we appreciate you ch
 
 Since you were last here, we've added hundreds of new trailers and updated our movie library. We know you love movies, so we made sure the content is fresh!
 
-We're still focused on bringing you those offline downloads and user chat features we talked about. They're coming soon and will make your TubeTrailer experience even better.
+
 
 You can reply to this email if you have problems. We will respond back.
 Keep enjoying the trailers!
@@ -943,7 +948,7 @@ We value your continued support for TubeTrailer. Your opinion helps us shape the
 
 If you have a moment, we'd love to know what you'd like to see improved most—just reply to this email!
 
-We are moving full-steam ahead on offline downloads, which should be ready in the next two weeks. Prepare to cut the cord and save your data!
+We have now launched movie downloadong full-steam. Prepare to cut the cord and save your data!
 
 Thanks for being a valued user!
 TubeTrailer Support
@@ -968,7 +973,7 @@ We noticed you signed up a few days ago but haven't been back to watch a trailer
 
 TubeTrailer is the perfect place to quickly watch the best new YouTube trailers and find out exactly where to watch the full movie. Every day brings a new batch of cinematic excitement!
 
-You'll be able to download your favorite trailers and movies soon—we’re working hard on that feature now. Ofcourse you know, there are zero ads on the platform, no annoying popups to distract you from exploring your favourite content.
+You'll can now be able to download your favorite trailers and movies. Ofcourse you know, there are zero ads on the platform, no annoying popups to distract you from exploring your favourite content.
 
 Why not discover a new movie trailer today? We hope to see you back in the app soon!
 
@@ -996,7 +1001,8 @@ We just wanted to reach out and remind you that your TubeTrailer account is read
 
 Did you know TubeTrailer is the only place where you can quickly SEE THE AVALIABILTY OF ANY TRAILER you search for so you can watch the movie instantly?
 
-We're about to launch our big offline feature, so now is the perfect time to get familiar with the app before the update drops.
+We're have included the feature which will let you download movie on to your device.
+ So now is the perfect time to get familiar with the app.
 
 We hope you'll take a look!
 
@@ -1009,7 +1015,7 @@ TubeTrailer Support
 This email is for users who signed up a few days ago but haven't been active.
 Key points to include:
 - Welcome them and express excitement about their potential.
-- Mention upcoming features and recent feature like the new avaliabilty button that lets you check if a traailer is out for instant streaming and the abilty to download movies offline.
+- Mention  features like the new avaliabilty button that lets you check if a traailer is out for instant streaming and the abilty to download movies offline.
 - Highlight the unique value proposition of the app.
 - Encourage them to discover new movie trailers.
 - Hope to see them again.
